@@ -7,7 +7,10 @@ export function useGeolocation() {
   const [loading, setLoading] = useState(false);
 
   const getLocation = () => {
+    console.log('Getting location...');
+    
     if (!navigator.geolocation) {
+      console.error('Geolocation is not supported');
       setError('Geolocation is not supported by your browser');
       return;
     }
@@ -18,27 +21,32 @@ export function useGeolocation() {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
+          console.log('Geolocation position received:', position);
           const { latitude, longitude } = position.coords;
           
           // First get the location name using reverse geocoding
-          const geoResponse = await fetch(
-            `https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${import.meta.env.VITE_OPENWEATHER_API_KEY}`
-          );
+          const geoUrl = `https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${import.meta.env.VITE_OPENWEATHER_API_KEY}`;
+          console.log('Reverse geocoding URL:', geoUrl);
+          
+          const geoResponse = await fetch(geoUrl);
           
           if (!geoResponse.ok) {
+            console.error('Reverse geocoding failed:', await geoResponse.text());
             throw new Error('Failed to get location name');
           }
           
           const [locationData] = await geoResponse.json();
+          console.log('Location data received:', locationData);
           
           setLocation({
             name: locationData.name,
             lat: latitude,
             lon: longitude,
           });
+          console.log('Location state updated:', { name: locationData.name, lat: latitude, lon: longitude });
         } catch (err) {
-          setError('Failed to get your location');
           console.error('Geolocation error:', err);
+          setError('Failed to get your location');
         } finally {
           setLoading(false);
         }

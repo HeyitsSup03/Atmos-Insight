@@ -4,6 +4,9 @@ import type { WeatherData, LocationData } from '../types/weather';
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 const BASE_URL = 'https://api.openweathermap.org/data/2.5';
 
+// Debug log to check if API key is available
+console.log('API Key available:', !!API_KEY);
+
 export function useWeather(location: LocationData | null) {
   return useQuery<WeatherData>(
     ['weather', location?.lat, location?.lon],
@@ -11,10 +14,13 @@ export function useWeather(location: LocationData | null) {
       if (!location) throw new Error('Location is required');
 
       try {
+        console.log('Fetching weather for location:', location);
+        
         // First get current weather
-        const currentResponse = await fetch(
-          `${BASE_URL}/weather?lat=${location.lat}&lon=${location.lon}&appid=${API_KEY}&units=metric`
-        );
+        const currentWeatherUrl = `${BASE_URL}/weather?lat=${location.lat}&lon=${location.lon}&appid=${API_KEY}&units=metric`;
+        console.log('Current weather URL:', currentWeatherUrl);
+        
+        const currentResponse = await fetch(currentWeatherUrl);
 
         if (!currentResponse.ok) {
           const errorData = await currentResponse.json();
@@ -23,11 +29,13 @@ export function useWeather(location: LocationData | null) {
         }
 
         const currentData = await currentResponse.json();
+        console.log('Current weather data received:', currentData);
 
         // Then get forecast data
-        const forecastResponse = await fetch(
-          `${BASE_URL}/forecast?lat=${location.lat}&lon=${location.lon}&appid=${API_KEY}&units=metric`
-        );
+        const forecastUrl = `${BASE_URL}/forecast?lat=${location.lat}&lon=${location.lon}&appid=${API_KEY}&units=metric`;
+        console.log('Forecast URL:', forecastUrl);
+        
+        const forecastResponse = await fetch(forecastUrl);
 
         if (!forecastResponse.ok) {
           const errorData = await forecastResponse.json();
@@ -36,6 +44,7 @@ export function useWeather(location: LocationData | null) {
         }
 
         const forecastData = await forecastResponse.json();
+        console.log('Forecast data received:', forecastData);
 
         // Process hourly data
         const hourlyData = forecastData.list.map((item: any) => ({
