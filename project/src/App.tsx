@@ -52,6 +52,12 @@ function WeatherApp() {
     return directions[index];
   };
 
+  // Add a helper function to safely display weather data
+  const getWeatherDetail = (value: number | undefined, unit: string, fallback: string = 'N/A') => {
+    if (value === undefined || value === null) return fallback;
+    return `${Math.round(value)} ${unit}`;
+  };
+
   return (
     <div className="min-h-screen relative">
       <VideoBackground videoUrl={videoUrl} />
@@ -151,10 +157,12 @@ function WeatherApp() {
                       <span>Wind</span>
                     </div>
                     <div className="text-white text-lg">
-                      {Math.round(weather.current.wind_speed)} m/s
+                      {getWeatherDetail(weather.current.wind_speed, 'm/s')}
                     </div>
                     <div className="text-white/60 text-sm">
-                      Direction: {getWindDirection(weather.current.wind_speed)}
+                      {weather.current.wind_deg !== undefined 
+                        ? `Direction: ${getWindDirection(weather.current.wind_deg)}`
+                        : 'Direction: N/A'}
                     </div>
                   </div>
 
@@ -164,10 +172,12 @@ function WeatherApp() {
                       <span>Humidity</span>
                     </div>
                     <div className="text-white text-lg">
-                      {weather.current.humidity}%
+                      {weather.current.humidity !== undefined ? `${weather.current.humidity}%` : 'N/A'}
                     </div>
                     <div className="text-white/60 text-sm">
-                      Dew point: {convertTemp(weather.current.feels_like - 2)}
+                      {weather.current.feels_like !== undefined 
+                        ? `Dew point: ${convertTemp(weather.current.feels_like - 2)}`
+                        : 'Dew point: N/A'}
                     </div>
                   </div>
 
@@ -177,10 +187,14 @@ function WeatherApp() {
                       <span>Visibility</span>
                     </div>
                     <div className="text-white text-lg">
-                      {Math.round(weather.current.visibility / 1000)} km
+                      {weather.current.visibility !== undefined 
+                        ? `${Math.round(weather.current.visibility / 1000)} km`
+                        : 'N/A'}
                     </div>
                     <div className="text-white/60 text-sm">
-                      {weather.current.visibility > 5000 ? 'Clear' : 'Reduced'}
+                      {weather.current.visibility !== undefined
+                        ? weather.current.visibility > 5000 ? 'Clear' : 'Reduced'
+                        : 'N/A'}
                     </div>
                   </div>
 

@@ -92,6 +92,7 @@ export function useWeather(location: LocationData | null) {
             feels_like: currentData.main.feels_like,
             humidity: currentData.main.humidity,
             wind_speed: currentData.wind.speed,
+            wind_deg: currentData.wind.deg,
             pressure: currentData.main.pressure,
             weather: currentData.weather,
             uvi: 0, // Not available in free API

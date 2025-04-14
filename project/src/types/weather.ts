@@ -4,6 +4,7 @@ export interface WeatherData {
     feels_like: number;
     humidity: number;
     wind_speed: number;
+    wind_deg?: number;
     pressure: number;
     weather: Array<{
       id: number;
